@@ -1,0 +1,22 @@
+export CONDA_SUBDIR=osx-arm64
+conda create --name arm64 python=3.12
+conda activate arm64
+python -c 'import platform; print(platform.platform())'
+
+conda install conda-forge::pyperclip
+conda install conda-forge::selenium
+conda install anaconda::requests
+conda install anaconda::pillow
+
+pip3 install undetected_chromedriver
+
+conda install conda-forge::playsound
+
+conda remove --name arm64 --all
+
+
+
+// website to download webdriver
+https://googlechromelabs.github.io/chrome-for-testing/#stable
+
+put the driver under webdriver/

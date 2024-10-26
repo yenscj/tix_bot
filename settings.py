@@ -19,7 +19,7 @@ import json
 import webbrowser
 import pyperclip
 
-CONST_APP_VERSION = u"MaxBot (2023.01.13)"
+CONST_APP_VERSION = u"SC start from 2024/10/26"
 
 CONST_FROM_TOP_TO_BOTTOM = u"from top to bottom"
 CONST_FROM_BOTTOM_TO_TOP = u"from bottom to top"
@@ -1809,6 +1809,19 @@ def clearFrame(frame):
     for widget in frame.winfo_children():
        widget.destroy()
 
+def setup_style():
+    style = ttk.Style()
+    style.theme_use('default')
+
+    # # Configure the overall notebook and its tabs
+    # style.configure('TNotebook', background='#d9d9d9')
+    # style.configure('TNotebook.Tab', background='#b0c4de', foreground='black')
+
+    # Configure the selected tab text and background color
+    # style.map('TNotebook.Tab',
+    #           background=[('selected', '#4682b4')],
+    #           foreground=[('selected', '#AABBCC')])
+
 def load_GUI(root, config_dict):
     clearFrame(root)
 
@@ -1818,9 +1831,10 @@ def load_GUI(root, config_dict):
             language_code = get_language_code_by_name(config_dict["language"])
 
     row_count = 0
-
+    setup_style()
     global tabControl
     tabControl = ttk.Notebook(root)
+    tabControl.pack(expand=1, fill="both")
     tab1 = Frame(tabControl)
     tabControl.add(tab1, text=translate[language_code]['preference'])
     tab2 = Frame(tabControl)

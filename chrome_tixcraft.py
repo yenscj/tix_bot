@@ -38,6 +38,8 @@ import warnings
 from urllib3.exceptions import InsecureRequestWarning
 warnings.simplefilter('ignore',InsecureRequestWarning)
 
+from selenium.common.exceptions import *
+
 # ocr
 import base64
 try:
@@ -166,7 +168,9 @@ def load_chromdriver_normal(webdriver_path, driver_type, adblock_plus_enable):
     chrome_service = Service(chromedriver_path)
 
     # method 6: Selenium Stealth
-    driver = webdriver.Chrome(service=chrome_service, options=chrome_options, desired_capabilities=caps)
+    # driver = webdriver.Chrome(service=chrome_service, options=chrome_options, desired_capabilities=caps)
+    chrome_options.set_capability("goog:loggingPrefs", {'Performance':'ALL'})
+    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
 
     if driver_type=="stealth":
         from selenium_stealth import stealth
@@ -983,6 +987,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
     coming_soon_condictions_list = ['開賣','剩餘','天','小時','分鐘','秒','0',':','/']
     
     button_list = None
+
     if date_list is not None:
         button_list = []
         for row in date_list:
@@ -1038,7 +1043,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
             if is_match_keyword_row:
                 el = None
                 try:
-                    el = row.find_element(By.CSS_SELECTOR, '.btn-next')
+                    el = row.find_element(By.CSS_SELECTOR, '.btn-primary')
                 except Exception as exc:
                     if show_debug_message:
                         print("find .btn-next fail")
@@ -1055,6 +1060,7 @@ def tixcraft_date_auto_select(driver, url, config_dict):
     is_date_selected = False
     if button_list is not None:
         if len(button_list) > 0:
+            # print(button_list)
             # default first row.
             target_row_index = 0
 
@@ -1390,8 +1396,23 @@ def tixcraft_ticket_agree(driver):
             # TODO: check the status: checked.
             if form_checkbox.is_enabled():
                 if not form_checkbox.is_selected():
+                    driver.execute_script("arguments[0].scrollIntoView(true);", form_checkbox)
                     form_checkbox.click()
                 is_finish_checkbox_click = True
+        except ElementClickInterceptedException:
+            print("ElementClickInterceptedException: 元素被其他元素遮擋")
+            try:
+                driver.execute_script("arguments[0].click();", form_checkbox)
+            except:
+                None
+        except ElementNotInteractableException:
+            print("ElementNotInteractableException: 元素不可互動")
+        except StaleElementReferenceException:
+            print("StaleElementReferenceException: 元素已經不在 DOM 中")
+        except NoSuchElementException:
+            print("NoSuchElementException: 沒有找到元素")
+        except WebDriverException as e:
+            print(f"WebDriverException: {e}")
         except Exception as exc:
             print("click TicketForm_agree fail")
             pass
